@@ -58,6 +58,7 @@ services:
     env_file:
       - .env
     volumes:
+      - ./backend:/app
       - model_cache:/app/model_cache
       - repos_data:/app/repos
     depends_on:

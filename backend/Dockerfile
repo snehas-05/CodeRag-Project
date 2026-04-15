@@ -12,7 +12,14 @@ RUN mkdir -p /app/model_cache /app/repos /app/tests
 
 # Copy requirements first for Docker layer caching
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+
+# 🔥 IMPORTANT FIXES (timeout + retries + pip upgrade)
+RUN pip install --upgrade pip
+
+RUN pip install --no-cache-dir \
+    --default-timeout=1000 \
+    --retries=20 \
+    -r requirements.txt
 
 # Copy application code
 COPY . .
