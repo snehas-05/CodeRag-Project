@@ -69,6 +69,19 @@ services:
       elasticsearch:
         condition: service_healthy
 
+  # ── React Frontend ──────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:8000
+
 volumes:
   mysql_data:
   chroma_data:
