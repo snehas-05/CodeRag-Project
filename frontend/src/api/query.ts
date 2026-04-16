@@ -13,13 +13,18 @@ export async function ingestRepo(
   return response.data;
 }
 
+export async function getAvailableRepos(): Promise<string[]> {
+  const response = await client.get<{ repos: string[] }>('/repos');
+  return response.data.repos || [];
+}
+
 export async function streamQuery(
   query: string,
   repo_id: string,
   onEvent: (event: StreamEvent) => void
 ): Promise<void> {
   const token = useAuthStore.getState().user?.access_token;
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
   const response = await fetch(`${baseUrl}/query`, {
     method: 'POST',

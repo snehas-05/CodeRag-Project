@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { register as registerApi, login as loginApi } from '../api/auth';
+import { register as registerApi } from '../api/auth';
 import { useAuthStore } from '../store/authStore';
 import { Spinner } from '../components/ui/Spinner';
 
@@ -11,7 +11,7 @@ export function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const authStore = useAuthStore();
+  const login = useAuthStore((state) => state.login);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,10 +33,12 @@ export function RegisterPage() {
 
     setIsLoading(true);
     try {
-      await registerApi(email, password);
-      // Auto-login after registration
-      const user = await loginApi(email, password);
-      authStore.login(user);
+      const auth = await registerApi(email, password);
+      login({
+        user_id: auth.user_id,
+        email: auth.email,
+        access_token: auth.access_token,
+      });
       toast.success('Account created successfully');
       navigate('/chat');
     } catch (err: any) {
