@@ -102,5 +102,28 @@ class Settings(BaseSettings):
             return str(Path(__file__).resolve().parents[1] / "repos")
         return self.REPOS_DIR
 
+    def validate_config(self):
+        """Perform startup validation of critical secrets and paths."""
+        import logging
+        logger = logging.getLogger("coderag.config")
+
+        # Check Secret Key
+        if self.SECRET_KEY == "dev-secret-key-change-in-production":
+            logger.warning("SECURITY: SECRET_KEY is set to default. Change this in production!")
+
+        # Check Gemini API Key
+        if not self.GEMINI_API_KEY:
+            logger.warning("CONFIG: GEMINI_API_KEY is missing. AI reasoning will be disabled.")
+        
+        # Check Paths
+        for path_name, path_str in [("MODEL_CACHE_DIR", self.MODEL_CACHE_DIR), ("REPOS_DIR", self.REPOS_DIR)]:
+            try:
+                path = Path(path_str)
+                if not path.exists():
+                    logger.warning(f"STORAGE: {path_name} path does not exist: {path_str}")
+            except Exception as e:
+                logger.error(f"STORAGE: Invalid {path_name}: {e}")
+
 
 settings = Settings()
+settings.validate_config()
