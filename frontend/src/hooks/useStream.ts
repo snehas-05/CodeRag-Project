@@ -1,87 +1,111 @@
-import { useState } from 'react';
-import { streamQuery } from '../api/query';
+import { useState, useCallback } from 'react';
+import { streamQuery, QueryStatus, QueryEvent } from '../api/query';
 import { DebugResult } from '../types';
 
-interface UseStreamReturn {
-  streamingStatus: string | null;
-  isStreaming: boolean;
-  result: DebugResult | null;
-  error: string | null;
-  sendQuery: (query: string, repoId: string) => Promise<DebugResult>;
-  reset: () => void;
+/**
+ * useStream Hook
+ * 
+ * Manages the AI Debugger query state and streaming accumulation.
+ */
+
+export interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  status?: QueryStatus;
+  timestamp: string;
+  result?: DebugResult;
 }
 
-export function useStream(): UseStreamReturn {
-  const [streamingStatus, setStreamingStatus] = useState<string | null>(null);
+export const useStream = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [result, setResult] = useState<DebugResult | null>(null);
+  const [currentStatus, setCurrentStatus] = useState<QueryStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const sendQuery = async (query: string, repoId: string): Promise<DebugResult> => {
-    setIsStreaming(true);
-    setStreamingStatus(null);
-    setResult(null);
+  const sendMessage = useCallback(async (query: string, repoId: string) => {
     setError(null);
-    let finalResult: DebugResult | null = null;
-    let streamError: string | null = null;
+    setIsStreaming(true);
+    setCurrentStatus('retrieving');
+
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      role: 'user',
+      content: query,
+      timestamp: new Date().toISOString(),
+    };
+
+    const assistantMessageId = crypto.randomUUID();
+    const assistantMessage: Message = {
+      id: assistantMessageId,
+      role: 'assistant',
+      content: '',
+      status: 'retrieving',
+      timestamp: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, userMessage, assistantMessage]);
 
     try {
-      await streamQuery(query, repoId, (event) => {
-        if (event.status === 'retrieving') {
-          setStreamingStatus('Fetching relevant code...');
-        } else if (event.status === 'retrieved') {
-          const chunks = event.chunks || 0;
-          setStreamingStatus(
-            `Found ${chunks} code chunk${chunks !== 1 ? 's' : ''}. Analyzing...`
+      await streamQuery({
+        query,
+        repo_id: repoId,
+        onEvent: (event: QueryEvent) => {
+          if (event.status) setCurrentStatus(event.status);
+          
+          setMessages((prev) => 
+            prev.map((msg) => {
+              if (msg.id === assistantMessageId) {
+                return {
+                  ...msg,
+                  status: event.status || msg.status,
+                  // Accumulate text if provided
+                  content: event.payload?.text 
+                    ? msg.content + event.payload.text 
+                    : msg.content,
+                  // Attach result if final
+                  result: event.payload?.result || msg.result,
+                };
+              }
+              return msg;
+            })
           );
-        } else if (event.status === 'analyzing') {
-          setStreamingStatus('Running reasoning agent...');
-        } else if (event.status === 'complete') {
-          finalResult = event.result || null;
-          setResult(finalResult);
+
+          if (event.status === 'complete') {
+            setIsStreaming(false);
+          }
+        },
+        onError: (err) => {
+          setError(err.message);
           setIsStreaming(false);
-          setStreamingStatus(null);
-        } else if (event.status === 'error') {
-          streamError = event.message || 'An error occurred';
-          setError(streamError);
-          setIsStreaming(false);
-          setStreamingStatus(null);
-        }
+          setCurrentStatus('error');
+          
+          setMessages((prev) => 
+            prev.map((msg) => 
+              msg.id === assistantMessageId ? { ...msg, status: 'error' } : msg
+            )
+          );
+        },
       });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      setError(message);
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred.');
       setIsStreaming(false);
-      setStreamingStatus(null);
-      throw new Error(message);
     }
+  }, []);
 
-    if (streamError) {
-      throw new Error(streamError);
-    }
-
-    if (!finalResult) {
-      setIsStreaming(false);
-      setStreamingStatus(null);
-      throw new Error('No final result received from stream');
-    }
-
-    return finalResult;
-  };
-
-  const reset = () => {
-    setStreamingStatus(null);
-    setIsStreaming(false);
-    setResult(null);
+  const clearMessages = useCallback(() => {
+    setMessages([]);
     setError(null);
-  };
+    setCurrentStatus(null);
+  }, []);
 
   return {
-    streamingStatus,
+    messages,
     isStreaming,
-    result,
+    currentStatus,
     error,
-    sendQuery,
-    reset,
+    sendMessage,
+    clearMessages,
+    setMessages,
   };
-}
+};

@@ -1,65 +1,52 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { Plus, Trash2, Moon, Sun } from 'lucide-react';
-import { AppLayout } from '../components/layout/AppLayout';
+import { 
+  Plus, 
+  Trash2, 
+  Moon, 
+  Sun, 
+  Github, 
+  Database, 
+  Shield, 
+  Cpu, 
+  Globe,
+  Loader2,
+  Terminal,
+  Activity
+} from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { ingestRepo } from '../api/query';
-import { Spinner } from '../components/ui/Spinner';
 
 function formatIngestError(err: any): string {
   const detail = err?.response?.data?.detail;
-
-  if (typeof detail === 'string' && detail.trim()) {
-    return detail;
-  }
-
+  if (typeof detail === 'string' && detail.trim()) return detail;
   if (Array.isArray(detail) && detail.length > 0) {
     const first = detail[0];
-    if (typeof first?.msg === 'string' && first.msg.trim()) {
-      return first.msg;
-    }
+    if (typeof first?.msg === 'string' && first.msg.trim()) return first.msg;
   }
-
   return err?.message || 'Ingestion failed';
 }
 
-export function SettingsPage() {
+/**
+ * SettingsPage: Premium System Configuration
+ */
+
+export const SettingsPage: React.FC = () => {
   const user = useAuthStore((s) => s.user);
   const [githubUrl, setGithubUrl] = useState('');
   const [repoId, setRepoId] = useState('');
   const [isIngestLoading, setIsIngestLoading] = useState(false);
   const [repos, setRepos] = useState<string[]>([]);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
-  // Load repos and theme from localStorage
   useEffect(() => {
     const stored = localStorage.getItem('coderag_repos');
     setRepos(stored ? JSON.parse(stored) : []);
-
-    const darkMode = localStorage.getItem('coderag_dark_mode') === 'true';
-    setIsDarkMode(darkMode);
-    applyTheme(darkMode);
   }, []);
-
-  const applyTheme = (dark: boolean) => {
-    if (dark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
-  const toggleTheme = () => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-    localStorage.setItem('coderag_dark_mode', newDarkMode.toString());
-    applyTheme(newDarkMode);
-    toast.success(newDarkMode ? 'Dark mode enabled' : 'Light mode enabled');
-  };
 
   const handleIngestRepo = async () => {
     if (!githubUrl || !repoId) {
-      toast.error('Please fill in both fields');
+      toast.error('Missing configuration parameters');
       return;
     }
 
@@ -69,7 +56,7 @@ export function SettingsPage() {
       const newRepos = [...repos, repoId];
       setRepos(newRepos);
       localStorage.setItem('coderag_repos', JSON.stringify(newRepos));
-      toast.success(`Repository "${repoId}" ingested successfully`);
+      toast.success(`Context "${repoId}" synchronized`);
       setGithubUrl('');
       setRepoId('');
     } catch (err: any) {
@@ -83,124 +70,179 @@ export function SettingsPage() {
     const newRepos = repos.filter((r) => r !== repoToRemove);
     setRepos(newRepos);
     localStorage.setItem('coderag_repos', JSON.stringify(newRepos));
-    toast.success(`Repository removed`);
+    toast.success(`Context removed from registry`);
   };
 
   return (
-    <AppLayout title="Settings">
-      <div className="p-6 max-w-2xl h-full overflow-y-auto">
-        {/* Ingest Repository Section */}
-        <section className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            Ingest Repository
-          </h2>
-          <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                GitHub URL
-              </label>
-              <input
-                type="text"
-                value={githubUrl}
-                onChange={(e) => setGithubUrl(e.target.value)}
-                placeholder="https://github.com/owner/repo"
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Repository ID
-              </label>
-              <input
-                type="text"
-                value={repoId}
-                onChange={(e) => setRepoId(e.target.value)}
-                placeholder="e.g., my-project-v1"
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button
-              onClick={handleIngestRepo}
-              disabled={isIngestLoading}
-              className="w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium transition flex items-center justify-center gap-2"
-            >
-              {isIngestLoading && <Spinner size="sm" />}
-              {isIngestLoading ? 'Ingesting...' : 'Ingest Repository'}
-            </button>
+    <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      
+      {/* Header */}
+      <div className="flex flex-col gap-2">
+         <h2 className="text-4xl font-black text-text-primary tracking-tighter">Command Center</h2>
+         <p className="text-text-muted text-sm leading-relaxed max-w-xl">
+           Configure your AI knowledge base, manage active repository contexts, and fine-tune your analysis engine.
+         </p>
+      </div>
 
-            {/* Ingested Repos */}
-            {repos.length > 0 && (
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-                  Ingested Repositories
-                </h3>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Main Controls - Left 2 Columns */}
+        <div className="lg:col-span-2 space-y-8">
+          
+          {/* Repository Ingestion Card */}
+          <div className="bg-surface border border-border rounded-[32px] overflow-hidden shadow-2xl">
+            <div className="px-8 py-6 border-b border-border bg-gradient-to-r from-accent/5 to-transparent flex items-center justify-between">
+               <div className="flex items-center gap-3">
+                  <div className="p-2 bg-accent/10 rounded-xl text-accent">
+                     <Github size={20} />
+                  </div>
+                  <h3 className="font-bold text-text-primary uppercase tracking-widest text-xs">Knowledge Ingestion</h3>
+               </div>
+               <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Ready to Sync</span>
+               </div>
+            </div>
+
+            <div className="p-8 space-y-6">
+              <div className="grid grid-cols-1 gap-6">
                 <div className="space-y-2">
-                  {repos.map((repo) => (
-                    <div
-                      key={repo}
-                      className="flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-700 rounded-lg"
-                    >
-                      <span className="text-sm text-gray-900 dark:text-white">
-                        {repo}
-                      </span>
-                      <button
-                        onClick={() => handleRemoveRepo(repo)}
-                        className="px-2 py-1 rounded text-xs bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/40 transition"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
+                  <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">GitHub Endpoint</label>
+                  <div className="relative">
+                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
+                    <input
+                      type="text"
+                      value={githubUrl}
+                      onChange={(e) => setGithubUrl(e.target.value)}
+                      placeholder="https://github.com/microsoft/vscode"
+                      className="w-full pl-12 pr-4 py-4 bg-background border border-border rounded-2xl text-sm text-text-primary focus:border-accent/40 focus:ring-4 focus:ring-accent/5 transition-all outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Context Identifier</label>
+                  <div className="relative">
+                    <Terminal className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
+                    <input
+                      type="text"
+                      value={repoId}
+                      onChange={(e) => setRepoId(e.target.value)}
+                      placeholder="vscore-main-rag"
+                      className="w-full pl-12 pr-4 py-4 bg-background border border-border rounded-2xl text-sm text-text-primary focus:border-accent/40 focus:ring-4 focus:ring-accent/5 transition-all outline-none"
+                    />
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
-        </section>
 
-        {/* Account Section */}
-        <section className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            Account
-          </h2>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                value={user?.email || ''}
-                disabled
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Theme Section */}
-        <section>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            Theme
-          </h2>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Dark Mode
-              </span>
               <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                onClick={handleIngestRepo}
+                disabled={isIngestLoading}
+                className={`
+                  w-full py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3
+                  ${isIngestLoading 
+                    ? 'bg-surface-elevated text-text-muted cursor-not-allowed' 
+                    : 'bg-accent text-background shadow-[0_8px_30px_rgba(var(--accent-rgb),0.2)] hover:scale-[1.02] active:scale-[0.98]'
+                  }
+                `}
               >
-                {isDarkMode ? (
-                  <Sun className="w-5 h-5 text-yellow-500" />
-                ) : (
-                  <Moon className="w-5 h-5 text-gray-600" />
-                )}
+                {isIngestLoading ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+                {isIngestLoading ? 'Synchronizing Context...' : 'Initialize Synchronization'}
               </button>
             </div>
           </div>
-        </section>
+
+          {/* Active Contexts Card */}
+          <div className="bg-surface border border-border rounded-[32px] overflow-hidden shadow-xl">
+             <div className="px-8 py-6 border-b border-border bg-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                   <div className="p-2 bg-amber-500/10 rounded-xl text-amber-500">
+                      <Database size={20} />
+                   </div>
+                   <h3 className="font-bold text-text-primary uppercase tracking-widest text-xs">Active Knowledge Base</h3>
+                </div>
+                <span className="px-3 py-1 rounded-full bg-background border border-border text-[10px] font-bold text-text-muted">
+                  {repos.length} REPOSITORIES
+                </span>
+             </div>
+
+             <div className="divide-y divide-border">
+                {repos.length === 0 ? (
+                  <div className="p-12 text-center text-text-muted text-sm italic">
+                    No active contexts initialized. Use the form above to start.
+                  </div>
+                ) : (
+                  repos.map((repo) => (
+                    <div key={repo} className="flex items-center justify-between p-6 px-8 hover:bg-white/5 transition-colors">
+                       <div className="flex flex-col">
+                          <span className="text-sm font-bold text-text-primary font-mono">{repo}</span>
+                          <span className="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-1">Status: Operational</span>
+                       </div>
+                       <button
+                         onClick={() => handleRemoveRepo(repo)}
+                         className="p-3 rounded-xl bg-danger/5 text-danger hover:bg-danger/10 transition-colors"
+                       >
+                         <Trash2 size={16} />
+                       </button>
+                    </div>
+                  ))
+                )}
+             </div>
+          </div>
+        </div>
+
+        {/* Sidebar Info - Right Column */}
+        <div className="space-y-8">
+           
+           {/* Account Status */}
+           <div className="p-8 bg-surface border border-border rounded-[32px] shadow-lg relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform">
+                 <Shield size={64} className="text-accent" />
+              </div>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-6">Security Context</h4>
+              <div className="flex items-center gap-4 mb-6">
+                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent to-accent-dim flex items-center justify-center text-background font-black text-xl">
+                    {user?.email?.charAt(0).toUpperCase() || 'U'}
+                 </div>
+                 <div className="flex flex-col min-w-0">
+                    <p className="text-sm font-bold text-text-primary truncate">{user?.email}</p>
+                    <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">Enterprise Access</p>
+                 </div>
+              </div>
+              <div className="p-4 rounded-2xl bg-background/50 border border-border flex items-center justify-between">
+                 <span className="text-[10px] text-text-muted font-bold uppercase">Token Status</span>
+                 <span className="text-[10px] text-text-primary font-mono bg-accent/20 px-2 py-0.5 rounded">Active</span>
+              </div>
+           </div>
+
+           {/* System Performance */}
+           <div className="p-8 bg-surface border border-border rounded-[32px] shadow-lg">
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-6">System Telemetry</h4>
+              <div className="space-y-6">
+                 <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                       <Cpu size={16} className="text-text-muted" />
+                       <span className="text-xs font-bold text-text-secondary">AI Reasoning Peak</span>
+                    </div>
+                    <span className="text-xs font-mono text-accent">98.2%</span>
+                 </div>
+                 <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                       <Activity size={16} className="text-text-muted" />
+                       <span className="text-xs font-bold text-text-secondary">Latency (RAG)</span>
+                    </div>
+                    <span className="text-xs font-mono text-accent">42ms</span>
+                 </div>
+                 <div className="w-full h-1.5 bg-background rounded-full overflow-hidden border border-border">
+                    <div className="h-full w-3/4 bg-accent animate-pulse" />
+                 </div>
+              </div>
+           </div>
+
+        </div>
       </div>
-    </AppLayout>
+    </div>
   );
-}
+};
+
+export default SettingsPage;

@@ -1,136 +1,325 @@
-# 🛡️ CodeRAG: AI-Powered Autonomous Debugging
+```markdown
+<div align="center">
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
-[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white)](https://www.docker.com/)
+<img src="https://img.shields.io/badge/CodeRAG-AI%20Powered-blueviolet?style=for-the-badge&logo=openai&logoColor=white" alt="CodeRAG" />
 
-**CodeRAG** is an intelligent debugging assistant that autonomously bridges the gap between semantic code understanding and keyword-driven log analysis. By combining high-density code chunking with a multi-node reasoning loop, CodeRAG moves beyond simple text generation to provide grounded, evidence-based root cause analysis and suggested fixes.
+# CodeRAG
+
+### Debug Smarter. Understand Faster. Build Better.
+
+**An AI-powered repository intelligence platform that transforms any GitHub codebase into a searchable, queryable knowledge base — powered by RAG, LangGraph, and Gemini.**
+
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)](https://react.dev)
+[![Python](https://img.shields.io/badge/Python_3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)](https://docker.com)
+[![Gemini](https://img.shields.io/badge/Google_Gemini-4285F4?style=flat-square&logo=google&logoColor=white)](https://deepmind.google/technologies/gemini)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+
+</div>
 
 ---
 
-## 🚀 Quick Start (Docker Orchestrated)
+## The Problem
 
-The easiest way to get CodeRAG running is via our unified management scripts.
+Large codebases are black boxes. You join a new team, inherit a legacy project, or debug a production issue — and you're lost in hundreds of files with no map.
 
-### 1. Requirements
-- **Docker Desktop** (or Docker Engine + Compose plugin)
-- **8 GB RAM** minimum (16 GB highly recommended)
-- **10 GB Disk Space** (for ML models and vector data)
+**CodeRAG changes that.** Point it at any GitHub repository, and it becomes a living, queryable intelligence layer. Ask it anything. Get precise, context-aware answers with source references — in real time.
 
-### 2. Automatic Setup
+---
+
+## What You Can Do
+
+```
+"Explain this repository's architecture"
+"Which files handle authentication?"
+"Why is the payment module failing?"
+"What database ORM does this project use?"
+"Trace the request lifecycle from API to DB"
+```
+
+---
+
+## Feature Overview
+
+| Category | Features |
+|---|---|
+| **Repository Ingestion** | Clone & index any public GitHub repo, chunking + vector embedding pipeline |
+| **AI Debugger** | Natural language queries, root cause analysis, architecture explanation |
+| **Search** | Hybrid search: vector similarity (ChromaDB) + keyword (Elasticsearch) |
+| **Streaming** | Real-time token-by-token response streaming |
+| **Analytics** | Session history, query logs, confidence scoring reports |
+| **Auth** | JWT-based registration, login, protected routes |
+| **UI** | Premium dark dashboard, responsive, modern design |
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                     GitHub Repository                    │
+└────────────────────────┬────────────────────────────────┘
+                         │ Ingestion
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              Chunking + Embedding Pipeline               │
+│         (Sentence Transformers / LangChain)              │
+└───────────┬──────────────────────────┬──────────────────┘
+            │                          │
+            ▼                          ▼
+   ┌─────────────────┐       ┌──────────────────┐
+   │    ChromaDB     │       │  Elasticsearch   │
+   │ Vector Storage  │       │   Code Search    │
+   └────────┬────────┘       └────────┬─────────┘
+            │                         │
+            └───────────┬─────────────┘
+                        │ Hybrid Retrieval
+                        ▼
+          ┌─────────────────────────┐
+          │  FastAPI + LangGraph    │
+          │   Reasoning Workflow    │
+          └────────────┬────────────┘
+                       │
+                       ▼
+          ┌─────────────────────────┐
+          │     Google Gemini       │
+          │    LLM Reasoning        │
+          └────────────┬────────────┘
+                       │ Streaming Response
+                       ▼
+          ┌─────────────────────────┐
+          │    React Frontend       │
+          │   (Real-time Output)    │
+          └─────────────────────────┘
+```
+
+---
+
+## Tech Stack
+
+### Frontend
+- **React.js** + **TypeScript** — component-driven UI
+- **Tailwind CSS** — utility-first styling
+- **Zustand** — lightweight state management
+- **Vite** — fast dev server & bundler
+
+### Backend
+- **FastAPI** — high-performance async API
+- **LangGraph** — agentic reasoning workflows
+- **LangChain** — LLM orchestration layer
+- **Uvicorn** — ASGI server
+
+### Databases & Search
+- **MySQL** — user accounts, sessions, query history
+- **ChromaDB** — vector embeddings for semantic search
+- **Elasticsearch** — full-text code indexing & retrieval
+
+### AI / LLM
+- **Google Gemini API** — reasoning & response generation
+- **Sentence Transformers** — local embedding models
+
+### DevOps
+- **Docker Compose** — one-command infrastructure setup
+
+---
+
+## Project Structure
+
+```
+CodeRAG/
+├── backend/
+│   ├── app/
+│   │   ├── api/           # Route handlers
+│   │   ├── core/          # Auth, config, security
+│   │   ├── models/        # DB models
+│   │   ├── services/      # Business logic
+│   │   │   ├── ingestion/ # Repo cloning & chunking
+│   │   │   ├── retrieval/ # ChromaDB + ES hybrid search
+│   │   │   └── reasoning/ # LangGraph + Gemini workflows
+│   │   └── main.py
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/    # Reusable UI components
+│   │   ├── pages/         # Dashboard, Debugger, Settings
+│   │   ├── store/         # Zustand state
+│   │   └── api/           # API client
+│   ├── package.json
+│   └── vite.config.ts
+│
+└── docker-compose.yml
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+Make sure the following are installed on your machine:
+
+- [Python 3.11+](https://www.python.org/downloads/)
+- [Node.js 18+](https://nodejs.org/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Git](https://git-scm.com/)
+
+---
+
+### Step 1 — Start Infrastructure
+
+Spin up MySQL, ChromaDB, and Elasticsearch with a single command:
+
 ```bash
-# Clone the repository
-git clone https://github.com/snehas-05/CodeRag-Project.git
-cd CodeRag-Project
-
-# Run the guided setup script (detects environment, builds, and starts containers)
-./scripts/setup.sh
+docker compose up mysql chromadb elasticsearch
 ```
 
-### 3. Verify Health
+| Service | Port |
+|---|---|
+| MySQL | `3307` |
+| ChromaDB | `8001` |
+| Elasticsearch | `9200` |
+
+---
+
+### Step 2 — Configure Environment
+
+Create a `.env` file inside the `backend/` directory:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key
+SECRET_KEY=your_jwt_secret_key
+
+MYSQL_HOST=localhost
+MYSQL_PORT=3307
+MYSQL_USER=root
+MYSQL_PASSWORD=yourpassword
+MYSQL_DB=coderag
+```
+
+> Get your Gemini API key at [aistudio.google.com](https://aistudio.google.com)
+
+---
+
+### Step 3 — Run the Backend
+
 ```bash
-# Using the Makefile
-make health
+cd backend
 
-# Or using the verification script
-./scripts/verify.sh
+# Create and activate virtual environment
+python -m venv .venv
+.venv\Scripts\Activate.ps1        # Windows
+# source .venv/bin/activate        # macOS / Linux
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the server
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+- API: `http://localhost:8000`
+- Swagger Docs: `http://localhost:8000/docs`
+
+---
+
+### Step 4 — Run the Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+- App: `http://localhost:5173`
+
+---
+
+## Usage Guide
+
+### 1. Register & Login
+Create an account and sign in to access your personal workspace.
+
+### 2. Ingest a Repository
+Navigate to **Settings → Repository Command Center**.
+
+```
+Repository URL:      https://github.com/username/repo-name
+Context Identifier:  my-project
+```
+
+Click **Initialize Synchronization** and wait for indexing to complete.
+
+### 3. Query the Debugger
+Go to the **AI Debugger** workspace and start asking:
+
+```
+> Explain the overall architecture of this repository
+> Which files are responsible for user authentication?
+> Why might the payment service be throwing a 500 error?
+> What is the data flow from the API layer to the database?
+```
+
+Each response includes:
+- **Confidence score** — how well the retrieved context matched your query
+- **Source references** — which files informed the answer
+- **Streaming output** — real-time token-by-token generation
+
+---
+
+## Security
+
+| Feature | Implementation |
+|---|---|
+| Authentication | JWT (JSON Web Tokens) |
+| Route Protection | Token-based middleware |
+| Session Handling | Secure persistent sessions |
+| API Security | Protected endpoints, CORS configuration |
+
+---
+
+## Roadmap
+
+- [ ] Multi-repository support (query across multiple codebases)
+- [ ] GitHub OAuth login
+- [ ] Team collaboration & shared workspaces
+- [ ] PDF export for debug reports
+- [ ] Private repository support via GitHub token
+- [ ] AWS / GCP deployment guide
+- [ ] Fine-tuned local model support (Ollama / LLaMA)
+
+---
+
+## Contributing
+
+Contributions are welcome and appreciated.
+
+```bash
+# Fork → Clone → Branch → Improve → PR
+git checkout -b feature/your-feature-name
+git commit -m "feat: add your feature"
+git push origin feature/your-feature-name
+```
+
+Please open an issue first for major changes.
+
+---
+
+## Author
+
+**Sneha Singhania**
+B.Tech CSE · AI Builder · Full Stack Developer
+
+---
+
+<div align="center">
+
+If CodeRAG helped you, consider giving it a ⭐ on GitHub — it helps more developers discover the project.
+
+**CodeRAG — where every repository becomes an answered question.**
+
+</div>
 ```
 
 ---
-
-## 🏗️ System Architecture
-
-CodeRAG leverages a **Retrieval-Augmented Generation (RAG)** pipeline integrated with a **LangGraph Reasoning Agent**.
-
-### Concept Flow
-1.  **Ingestion**: Clones repositories and performs AST-aware chunking for Python and block-based chunking for other languages.
-2.  **Dual Indexing**:
-    *   **ChromaDB**: Stores semantic embeddings for code blocks (using CodeBERT).
-    *   **Elasticsearch**: Indexes raw log lines for high-speed keyword retrieval.
-3.  **Agent Loop**: A multi-step reasoning agent (Retrieve → Analyze → Verify → Decide) that iteratively refines its hypothesis until a confidence threshold is met.
-
-```mermaid
-flowchart TD
-    subgraph Input
-        Q[User Debugging Query]
-        L[Application Logs]
-        R[Git Repository]
-    end
-
-    subgraph "Core RAG Pipeline"
-        direction TB
-        B1[Chunker] --> B2[CodeBERT Embeddings]
-        B1 --> B3[Log Indexer]
-        B2 --> B4[(ChromaDB)]
-        B3 --> B5[(Elasticsearch)]
-    end
-
-    subgraph "Reasoning Agent (LangGraph)"
-        direction LR
-        A1[Retrieve Evidence] --> A2[Analyze Hypothesis]
-        A2 --> A3{Verify & Score}
-        A3 -- low confidence --> A1
-        A3 -- high confidence --> A4[Final Response]
-    end
-
-    R --> B1
-    L --> B3
-    Q --> A1
-    B4 -.-> A1
-    B5 -.-> A1
-    A4 --> Out[Root Cause + Recommended Fix]
-```
-
----
-
-## 🛠️ Management & Automation
-
-We provide a `Makefile` and a `scripts/` directory to simplify daily operations.
-
-### Makefile Commands
-| Command | Action |
-| :--- | :--- |
-| `make up` | Start full stack (detached) |
-| `make down` | Stop all services |
-| `make logs` | Stream logs from all containers |
-| `make health` | Quick check of API and UI endpoints |
-| `make test` | Run core reasoning & retrieval test suites |
-| `make clean` | Factory reset (removes containers & volumes) |
-
----
-
-## 🧩 Technical Stack
-
-- **Backend Framework**: [FastAPI](https://fastapi.tiangolo.com/) (Async Python 3.11)
-- **Vector Database**: [ChromaDB](https://www.trychroma.com/)
-- **Search Engine**: [Elasticsearch 8.x](https://www.elastic.co/) (Keyword/BM25)
-- **Relational Data**: [MySQL 8.0](https://www.mysql.com/)
-- **AI/ML Orchestration**: [LangChain](https://www.langchain.com/) + [LangGraph](https://langchain-ai.github.io/langgraph/)
-- **Embeddings**: `sentence-transformers` (MiniLM) and `CodeBERT`
-- **LLM Reasoning**: `FLAN-T5` (for autonomous hypothesis synthesis)
-
----
-
-## 📍 Roadmap
-
-- [ ] **Interactive UI**: Full React dashboard for repository management and chat-based debugging.
-- [ ] **Session Persistence**: Persistent storage for all debugging sessions and reasoning chains.
-- [ ] **Multi-Language AST Support**: Enhanced chunking for JavaScript/TypeScript and Java.
-- [ ] **Advanced Filtering**: Filter evidence by specific time ranges in logs or specific directory branches.
-- [ ] **CI/CD Integration**: Automated debugging reports triggered by failed CI pipelines.
-
----
-
-## ⚠️ Important Notes
-
-> [!NOTE]
-> **First Run Performance**: On the first start, the backend container will download approximately **2 GB** of pre-trained models. This may take several minutes depending on your internet connection.
-
-> [!WARNING]
-> **Hardware Compatibility**: Apple Silicon users should ensure Docker Desktop has "Use Rosetta for x86/amd64 emulation" enabled for optimal performance of some ML components.
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

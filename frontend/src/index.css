@@ -4,108 +4,84 @@
 
 @layer base {
   :root {
-    --color-brand-50: #f0f9ff;
-    --color-brand-500: #0ea5e9;
-    --color-brand-600: #0284c7;
-    --color-brand-900: #0c4a6e;
+    --background: 222 47% 4%;
+    --foreground: 213 31% 91%;
+    --card: 222 47% 4%;
+    --card-foreground: 213 31% 91%;
+    --popover: 222 47% 4%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 188 94% 42%;
+    --primary-foreground: 222 47% 4%;
+    --secondary: 222 47% 11%;
+    --secondary-foreground: 213 31% 91%;
+    --muted: 222 47% 11%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 222 47% 11%;
+    --accent-foreground: 213 31% 91%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 222 47% 11%;
+    --input: 222 47% 11%;
+    --ring: 188 94% 42%;
+    --radius: 0.75rem;
   }
-}
 
-@layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.3s ease-in;
+  body {
+    @apply bg-background text-text-primary antialiased selection:bg-accent/30 selection:text-accent;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: 'Inter', sans-serif;
   }
-  
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Force autoprefixer to keep the -webkit prefixes for line-clamp */
-
-body {
-  @apply bg-white dark:bg-gray-950 text-gray-900 dark:text-white transition-colors duration-300;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-::selection {
-  @apply bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-100;
 }
 
 @layer components {
-  /* Premium Card Styles */
-  .card-gradient {
-    @apply border border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50 backdrop-blur-md shadow-sm;
-  }
-  
-  /* Markdown Typography Refinements */
-  .prose {
-    --tw-prose-body: theme('colors.gray.700');
-    --tw-prose-headings: theme('colors.gray.900');
-    --tw-prose-links: theme('colors.blue.600');
-    --tw-prose-bold: theme('colors.gray.900');
-    --tw-prose-counters: theme('colors.gray.500');
-    --tw-prose-bullets: theme('colors.gray.400');
-    --tw-prose-hr: theme('colors.gray.100');
-    --tw-prose-quotes: theme('colors.gray.900');
-    --tw-prose-quote-borders: theme('colors.blue.500');
-    --tw-prose-captions: theme('colors.gray.500');
-    --tw-prose-code: theme('colors.pink.600');
-    --tw-prose-pre-code: theme('colors.gray.200');
-    --tw-prose-pre-bg: theme('colors.gray.800');
-    --tw-prose-th-borders: theme('colors.gray.200');
-    --tw-prose-td-borders: theme('colors.gray.100');
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
   }
 
-  .dark .prose {
-    --tw-prose-body: theme('colors.gray.300');
-    --tw-prose-headings: theme('colors.white');
-    --tw-prose-links: theme('colors.blue.400');
-    --tw-prose-bold: theme('colors.white');
-    --tw-prose-counters: theme('colors.gray.400');
-    --tw-prose-bullets: theme('colors.gray.600');
-    --tw-prose-hr: theme('colors.gray.800/50');
-    --tw-prose-quotes: theme('colors.gray.100');
-    --tw-prose-quote-borders: theme('colors.blue.500');
-    --tw-prose-captions: theme('colors.gray.400');
-    --tw-prose-code: theme('colors.pink.400');
-    --tw-prose-pre-code: theme('colors.gray.300');
-    --tw-prose-pre-bg: 'rgb(0 0 0 / 50%)';
-    --tw-prose-th-borders: theme('colors.gray.700');
-    --tw-prose-td-borders: theme('colors.gray.800');
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
   }
 
-  /* Zero Raw Markdown Symbols - Ensure cleaner rendering */
-  .prose code::before,
-  .prose code::after {
-    content: "" !important;
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-surface-elevated rounded-full hover:bg-border transition-colors;
+  }
+
+  .glass-panel {
+    @apply bg-background/50 backdrop-blur-md border border-border;
+  }
+
+  .glass-card {
+    @apply bg-surface/40 backdrop-blur-md border border-border/50 rounded-xl hover:border-accent/30 transition-all duration-300;
+  }
+
+  .focus-ring {
+    @apply outline-none ring-2 ring-accent/50 ring-offset-2 ring-offset-background;
   }
 }
 
-/* Custom Scrollbar for Premium Feel */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+h1, h2, h3, h4, h5, h6 {
+  @apply tracking-tight font-bold text-text-primary;
 }
 
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
+code {
+  @apply font-mono;
 }
 
-::-webkit-scrollbar-thumb {
-  @apply bg-gray-200 dark:bg-gray-800 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors;
+.animate-fade-in {
+  animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-up {
+  animation: slide-in-bottom 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }

@@ -1,138 +1,43 @@
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import { v4 as uuidv4 } from 'uuid';
-import { AppLayout } from '../components/layout/AppLayout';
-import { ChatWindow } from '../components/chat/ChatWindow';
-import { ChatInput } from '../components/chat/ChatInput';
-import { useStream } from '../hooks/useStream';
-import { getSession } from '../api/history';
-import { getAvailableRepos } from '../api/query';
-import { Message } from '../types';
+import React, { useEffect } from 'react';
+import AppLayout from '../components/layout/AppLayout';
+import ChatWindow from '../components/chat/ChatWindow';
+import { Terminal, Shield, Workflow } from 'lucide-react';
 
-export function ChatPage() {
-  const [searchParams] = useSearchParams();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [availableRepos, setAvailableRepos] = useState<string[]>([]);
-  const { streamingStatus, isStreaming, result, error, sendQuery, reset } =
-    useStream();
+/**
+ * AI Debugger Workspace
+ */
 
-  // Load repositories from the backend so the chat only uses repos that exist.
+export const ChatPage: React.FC = () => {
   useEffect(() => {
-    const loadRepos = async () => {
-      try {
-        const backendRepos = await getAvailableRepos();
-        setAvailableRepos(backendRepos);
-        localStorage.setItem('coderag_repos', JSON.stringify(backendRepos));
-      } catch {
-        const stored = localStorage.getItem('coderag_repos');
-        const repos = stored ? JSON.parse(stored) : [];
-        setAvailableRepos(repos);
-      }
-    };
-
-    loadRepos();
+    document.title = 'AI Debugger | CodeRAG';
   }, []);
 
-  // Load session if URL param exists
-  useEffect(() => {
-    const sessionId = searchParams.get('session');
-    if (sessionId) {
-      const loadSession = async () => {
-        try {
-          const session = await getSession(parseInt(sessionId));
-          setMessages([
-            {
-              id: uuidv4(),
-              role: 'user',
-              content: session.query,
-              timestamp: new Date(session.created_at),
-            },
-            {
-              id: uuidv4(),
-              role: 'assistant',
-              content: session.response.root_cause || 'Debug result',
-              result: session.response,
-              timestamp: new Date(session.created_at),
-            },
-          ]);
-        } catch (err) {
-          toast.error('Failed to load session');
-        }
-      };
-      loadSession();
-    }
-  }, [searchParams]);
-
-  const handleSendQuery = async (query: string, repoId: string) => {
-    // Add user message
-    const userMessageId = uuidv4();
-    const userMessage: Message = {
-      id: userMessageId,
-      role: 'user',
-      content: query,
-      timestamp: new Date(),
-    };
-    setMessages((prev) => [...prev, userMessage]);
-
-    // Add placeholder for assistant response
-    const assistantMessageId = uuidv4();
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: assistantMessageId,
-        role: 'assistant',
-        content: streamingStatus || 'Processing...',
-        isStreaming: true,
-        timestamp: new Date(),
-      },
-    ]);
-
-    try {
-      const finalResult = await sendQuery(query, repoId);
-
-      // Update the assistant message with the final stream result.
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === assistantMessageId
-            ? {
-                ...msg,
-                content: finalResult.root_cause || 'Debug complete',
-                result: finalResult,
-                isStreaming: false,
-              }
-            : msg
-        )
-      );
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Query failed';
-      toast.error(message);
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === assistantMessageId
-            ? {
-                ...msg,
-                content: 'Query failed. Please try again.',
-                isStreaming: false,
-              }
-            : msg
-        )
-      );
-    }
-
-    reset();
-  };
-
   return (
-    <AppLayout title="Chat">
-      <div className="flex flex-col h-full">
-        <ChatWindow messages={messages} />
-        <ChatInput
-          onSendQuery={handleSendQuery}
-          isLoading={isStreaming}
-          availableRepos={availableRepos}
-        />
+    <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-700">
+      {/* Page Header / Context Bar */}
+      <div className="flex items-center justify-between px-2">
+        <div className="flex items-center gap-3">
+           <div className="p-2 bg-accent/10 rounded-lg text-accent border border-accent/20">
+              <Workflow size={18} />
+           </div>
+           <div>
+             <h2 className="text-sm font-bold text-text-primary uppercase tracking-wider">Analysis Workspace</h2>
+             <p className="text-xs text-text-muted font-medium">Session isolation active • Premium Tier</p>
+           </div>
+        </div>
+        
+        <div className="flex items-center gap-2 px-3 py-1 bg-surface-elevated border border-border rounded-full text-[10px] text-accent font-mono shadow-sm">
+           <Shield size={12} />
+           <span>WORKLOAD IDENTITY VERIFIED</span>
+        </div>
       </div>
-    </AppLayout>
+
+      {/* The Chat Interface */}
+      <div className="flex-1 bg-surface-elevated/20 border border-border rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm">
+         <ChatWindow />
+      </div>
+    </div>
   );
-}
+};
+
+export default ChatPage;

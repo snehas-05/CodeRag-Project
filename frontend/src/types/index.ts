@@ -1,6 +1,7 @@
+import { QueryStatus } from '../api/query';
+
 /**
- * CodeRAG Frontend - Shared TypeScript Types
- * All components import types from here — never define inline types
+ * CodeRAG Premium Frontend Types
  */
 
 export interface User {
@@ -25,8 +26,8 @@ export interface EvidenceItem {
 }
 
 export interface DebugResult {
-  root_cause: string | null;
-  suggested_fix: string | null;
+  root_cause: string;
+  suggested_fix: string;
   evidence: EvidenceItem[];
   confidence: number;
   iterations: number;
@@ -35,7 +36,7 @@ export interface DebugResult {
 }
 
 export interface StreamEvent {
-  status: "retrieving" | "retrieved" | "analyzing" | "complete" | "error";
+  status: QueryStatus;
   message?: string;
   chunks?: number;
   result?: DebugResult;
@@ -44,11 +45,11 @@ export interface StreamEvent {
 
 export interface Message {
   id: string;
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   content: string;
+  status?: QueryStatus;
+  timestamp: string;
   result?: DebugResult;
-  timestamp: Date;
-  isStreaming?: boolean;
 }
 
 export interface HistoryItem {

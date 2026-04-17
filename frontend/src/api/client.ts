@@ -1,29 +1,57 @@
-import axios from 'axios';
+import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { useAuthStore } from '../store/authStore';
 
-const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
-  headers: { 'Content-Type': 'application/json' },
+/**
+ * CodeRAG Premium API Client
+ * 
+ * Features:
+ * - Singleton Axios instance.
+ * - Automatic Bearer token injection.
+ * - Global 401 handling for session cleanup.
+ */
+
+const baseURL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
+const client: AxiosInstance = axios.create({
+  baseURL,
+  timeout: 60000, // Increased timeout for RAG operations
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// Request interceptor: add JWT token
-client.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().user?.access_token;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Request Interceptor: Inject JWT
+client.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const { accessToken } = useAuthStore.getState();
 
-// Response interceptor: handle 401 by logging out
-client.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      useAuthStore.getState().logout();
-      window.location.href = '/login';
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
-    return Promise.reject(err);
+
+    return config;
+  },
+  (error: AxiosError) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response Interceptor: Handle 401s
+client.interceptors.response.use(
+  (response: AxiosResponse) => {
+    return response;
+  },
+  async (error: AxiosError) => {
+    const { logout } = useAuthStore.getState();
+
+    if (error.response?.status === 401) {
+      logout();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login?reason=session_expired';
+      }
+    }
+
+    return Promise.reject(error);
   }
 );
 

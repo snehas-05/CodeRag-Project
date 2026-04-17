@@ -29,7 +29,7 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
 
             return (
               <code
-                className={`${className} bg-gray-200 dark:bg-gray-700 rounded px-1.5 py-0.5 text-pink-600 dark:text-pink-400 font-mono text-xs`}
+                className={`${className} bg-gray-200 dark:bg-accent/10 rounded px-1.5 py-0.5 text-pink-600 dark:text-accent font-mono text-xs`}
                 {...props}
               >
                 {children}
@@ -37,15 +37,15 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
             );
           },
           // Customize other elements for "premium" feel
-          h1: ({ children }) => <h1 className="text-2xl font-bold mb-4 mt-6 text-gray-900 dark:text-white border-b pb-2">{children}</h1>,
-          h2: ({ children }) => <h2 className="text-xl font-semibold mb-3 mt-5 text-gray-800 dark:text-gray-100">{children}</h2>,
-          h3: ({ children }) => <h3 className="text-lg font-medium mb-2 mt-4 text-gray-800 dark:text-gray-200">{children}</h3>,
-          p: ({ children }) => <p className="mb-4 leading-relaxed text-gray-700 dark:text-gray-300 last:mb-0">{children}</p>,
-          ul: ({ children }) => <ul className="list-disc ml-6 mb-4 space-y-2 text-gray-700 dark:text-gray-300">{children}</ul>,
-          ol: ({ children }) => <ol className="list-decimal ml-6 mb-4 space-y-2 text-gray-700 dark:text-gray-300">{children}</ol>,
+          h1: ({ children }) => <h1 className="text-2xl font-bold mb-4 mt-6 text-white border-b pb-2 border-border">{children}</h1>,
+          h2: ({ children }) => <h2 className="text-xl font-semibold mb-3 mt-5 text-white">{children}</h2>,
+          h3: ({ children }) => <h3 className="text-lg font-medium mb-2 mt-4 text-white">{children}</h3>,
+          p: ({ children }) => <p className="mb-4 leading-relaxed text-gray-100 last:mb-0">{children}</p>,
+          ul: ({ children }) => <ul className="list-disc ml-6 mb-4 space-y-2 text-gray-100">{children}</ul>,
+          ol: ({ children }) => <ol className="list-decimal ml-6 mb-4 space-y-2 text-gray-100">{children}</ol>,
           li: ({ children }) => <li className="pl-1">{children}</li>,
           blockquote: ({ children }) => (
-            <blockquote className="border-l-4 border-brand-500 pl-4 italic my-4 text-gray-600 dark:text-gray-400">
+            <blockquote className="border-l-4 border-accent pl-4 italic my-4 text-gray-300">
               {children}
             </blockquote>
           ),
