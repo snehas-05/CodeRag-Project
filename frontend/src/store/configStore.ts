@@ -119,7 +119,7 @@ export const useConfigStore = create<ConfigState>()(
       }))
     }),
     {
-      name: 'coderag-config',
+      name: 'coderag-config-v2',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         theme: state.theme,
