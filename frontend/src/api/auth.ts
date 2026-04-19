@@ -44,3 +44,26 @@ export async function getMe(): Promise<any> {
   const response = await client.get('/auth/me');
   return response.data;
 }
+
+export async function forgotPassword(email: string): Promise<any> {
+  const response = await client.post('/auth/forgot-password', { email });
+  return response.data;
+}
+
+export async function verifyOtp(email: string, otp: string): Promise<any> {
+  const response = await client.post('/auth/verify-otp', { email, otp });
+  return response.data;
+}
+
+export async function resetPassword(
+  email: string,
+  otp: string,
+  newPassword: string
+): Promise<any> {
+  const response = await client.post('/auth/reset-password', {
+    email,
+    otp,
+    new_password: newPassword,
+  });
+  return response.data;
+}

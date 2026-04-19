@@ -115,9 +115,9 @@ const LoginPage: React.FC = () => {
                 <label className="text-xs font-bold uppercase tracking-widest text-text-muted">
                   Password
                 </label>
-                <a href="#" className="text-xs text-accent hover:text-accent/80 transition-colors font-medium">
+                <Link to="/forgot-password" size={20} className="text-xs text-accent hover:text-accent/80 transition-colors font-medium">
                   Forgot password?
-                </a>
+                </Link>
               </div>
               <input
                 type="password"
