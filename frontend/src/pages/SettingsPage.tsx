@@ -76,9 +76,7 @@ export const SettingsPage: React.FC = () => {
           <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center text-background text-3xl font-black shadow-xl group-hover:scale-[1.02] transition-transform">
             {formData.fullName.charAt(0)}
           </div>
-          <button className="absolute -bottom-2 -right-2 p-2 bg-surface-elevated border border-border rounded-xl shadow-lg hover:text-accent transition-colors">
-            <SettingsIcon size={14} />
-          </button>
+
         </div>
         <div className="space-y-2">
           <h4 className="text-lg font-bold text-text-primary">{formData.fullName}</h4>

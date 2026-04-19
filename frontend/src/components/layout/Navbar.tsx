@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useConfigStore } from '../../store/configStore';
 import { useNotificationStore } from '../../store/notificationStore';
+import { useAuthStore } from '../../store/authStore';
 import RepoSelector from './RepoSelector';
 import NotificationCenter from './NotificationCenter';
 import UserProfileDropdown from './UserProfileDropdown';
@@ -44,7 +45,10 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
   } = useConfigStore();
 
   const { notifications } = useNotificationStore();
+  const { user } = useAuthStore();
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  const userInitial = user?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U';
 
   const navRef = useRef<HTMLDivElement>(null);
 
@@ -107,22 +111,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
       </div>
 
       <div className="flex items-center gap-3 md:gap-4 lg:gap-6">
-        {/* Command Palette Trigger */}
-        <button
-          className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-surface-elevated border border-border rounded-xl text-text-muted hover:text-text-secondary hover:border-accent/30 transition-all text-xs group"
-          onClick={() => {
-            setSearchOpen(true);
-            setRepoSelectorOpen(false);
-            setNotificationsOpen(false);
-            setProfileOpen(false);
-          }}
-        >
-          <Search size={14} className="group-hover:text-accent transition-colors" />
-          <span className="font-medium">Quick Find...</span>
-          <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-background border border-border text-[9px] font-bold">
-            <Command size={8} /> K
-          </div>
-        </button>
+
 
         {/* Repo Selector */}
         <div className="relative">
@@ -183,7 +172,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
               className={`flex items-center gap-2 p-1 rounded-full border transition-all ${isProfileOpen ? 'border-accent ring-4 ring-accent/10' : 'border-border hover:border-accent/40'}`}
             >
               <div className="w-8 h-8 rounded-full bg-accent text-background flex items-center justify-center text-xs font-black">
-                D
+                {userInitial}
               </div>
               <ChevronDown size={12} className={`text-text-muted transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
             </button>
