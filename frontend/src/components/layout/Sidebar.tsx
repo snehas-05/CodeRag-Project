@@ -61,43 +61,46 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Main Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-3 space-y-0.5">
           {navLinks.map((link) => (
             <NavLink
               key={link.path}
               to={link.path}
               onClick={onClose}
               className={({ isActive }) => `
-                flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group
+                flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-200 group
                 md:justify-center lg:justify-start
                 ${isActive
-                  ? 'bg-accent/10 text-accent border border-accent/20'
-                  : 'text-text-secondary hover:text-text-primary hover:bg-surface/50 border border-transparent'}
+                   ? 'bg-accent/10 text-accent border border-accent/20'
+                   : 'text-text-secondary/80 hover:text-text-primary hover:bg-surface/50 border border-transparent'}
               `}
             >
-              <link.icon size={20} className="shrink-0" />
-              <span className="font-medium text-sm md:hidden lg:block">{link.name}</span>
+              <link.icon size={18} className="shrink-0" />
+              <span className="font-semibold text-[13px] md:hidden lg:block">{link.name}</span>
             </NavLink>
           ))}
 
           {/* Activity Section */}
-          <div className="mt-8 pt-8 border-t border-border md:hidden lg:block">
+          <div className="mt-4 pt-4 border-t border-border/50 md:hidden lg:block">
             <div className="px-3 mb-2 flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-text-muted/60">
                 Recent Context
               </span>
-              <History size={12} className="text-text-muted transition-theme" />
+              <History size={10} className="text-text-muted/40" />
             </div>
-            <div className="space-y-1">
-              <div className="px-3 py-2 text-[10px] text-text-muted italic">
-                Active indexing session.
-              </div>
+            <div className="space-y-0.5 px-1">
+               <div className="group/item relative px-2 py-1 rounded-md hover:bg-surface/30 cursor-pointer transition-all">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.2)]" />
+                    <span className="text-[10px] font-bold text-text-secondary/70 group-hover/item:text-text-primary transition-colors">Active indexing session</span>
+                  </div>
+               </div>
             </div>
           </div>
         </nav>
 
         {/* User Profile / Interactive */}
-        <div className="p-4 border-t border-border relative">
+        <div className="p-3 border-t border-border relative">
           <div
             onClick={() => setProfileOpen(!isProfileOpen)}
             className={`
@@ -106,14 +109,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               ${isProfileOpen ? 'bg-surface-elevated ring-1 ring-border shadow-lg' : 'hover:bg-surface/50'}
             `}
           >
-            <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center shrink-0 shadow-sm">
-              <span className="text-[10px] font-bold text-accent">
+            <div className="w-7 h-7 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0 shadow-sm">
+              <span className="text-[9px] font-black text-accent">
                 {user?.email?.charAt(0).toUpperCase() || 'U'}
               </span>
             </div>
-            <div className="min-w-0 md:hidden lg:block">
-              <p className="text-xs font-semibold text-text-primary truncate">{user?.email?.split('@')[0]}</p>
-              <p className="text-[10px] text-text-muted truncate">Standard Access</p>
+            <div className="min-w-0 md:hidden lg:block flex-1">
+              <p className="text-[11px] font-bold text-text-primary truncate leading-none mb-0.5">{user?.email?.split('@')[0]}</p>
+              <p className="text-[9px] font-medium text-text-muted truncate leading-none">Standard Access</p>
             </div>
           </div>
 

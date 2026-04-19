@@ -11,4 +11,9 @@ class User(Base):
     username = Column(String(255), unique=True, nullable=True, index=True)
     full_name = Column(String(255), nullable=True)
     hashed_password = Column(String(255), nullable=False)
+    
+    # OTP for password reset
+    otp = Column(String(10), nullable=True)
+    otp_expiry = Column(DateTime, nullable=True)
+    
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
