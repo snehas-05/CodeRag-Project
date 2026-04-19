@@ -71,7 +71,7 @@ const DEFAULT_REPOS: Repository[] = [
     id: '3',
     name: 'api-service',
     url: 'https://github.com/internal/api-service',
-    status: 'Error',
+    status: 'Ready',
     lastIndexed: '5h ago'
   }
 ];
