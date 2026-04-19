@@ -41,6 +41,34 @@ Designed for enterprise-scale repositories.
 
 ---
 
+# 🛠 Tech Stack
+
+## Frontend
+- React + TypeScript
+- Vite
+- Tailwind CSS
+- Zustand
+- React Query
+
+## Backend
+- FastAPI
+- Python
+- LangChain
+- Sentence Transformers
+- JWT Authentication
+
+## Databases
+- MySQL → Users & metadata
+- ChromaDB → Vector storage
+- Elasticsearch → Hybrid search
+
+## DevOps / Tools
+- Docker Compose
+- Uvicorn
+- GitHub
+
+---
+
 ## 🏗️ Architecture
 
 Built on a modern, scalable, and intelligent AI-powered technology stack.
@@ -80,7 +108,6 @@ Built on a modern, scalable, and intelligent AI-powered technology stack.
 ---
 
 ## 🚀 Getting Started
-
 Follow these steps to run a local instance of **CodeRAG** on your machine.
 
 ### Prerequisites
