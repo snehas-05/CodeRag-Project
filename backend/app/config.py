@@ -19,9 +19,9 @@ for env_file in [ROOT_ENV_LOCAL, ROOT_ENV_FILE, BACKEND_ENV_FILE]:
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
-    # MySQL
-    MYSQL_URL: str = "mysql+pymysql://coderag_user:coderag_pass@mysql:3306/coderag"
-    MYSQL_HOST_PORT: int = 3307
+    # PostgreSQL
+    DATABASE_URL: str = "postgresql://coderag_user:coderag_pass@postgres:5432/coderag"
+    POSTGRES_HOST_PORT: int = 5432
     APP_ENV: str = "local"
 
     # Security
@@ -57,17 +57,17 @@ class Settings(BaseSettings):
     )
 
     @property
-    def resolved_mysql_url(self) -> str:
+    def resolved_database_url(self) -> str:
         """Return a DB URL that works in both local and Docker runs.
 
-        Local `uvicorn` cannot resolve the Docker service hostname `mysql`,
+        Local `uvicorn` cannot resolve the Docker service hostname `postgres`,
         so map it to localhost + published host port.
         """
-        db_url = make_url(self.MYSQL_URL)
-        if self.APP_ENV.lower() != "docker" and db_url.host == "mysql":
-            local_url = db_url.set(host="127.0.0.1", port=self.MYSQL_HOST_PORT)
+        db_url = make_url(self.DATABASE_URL)
+        if self.APP_ENV.lower() != "docker" and db_url.host == "postgres":
+            local_url = db_url.set(host="127.0.0.1", port=self.POSTGRES_HOST_PORT)
             return local_url.render_as_string(hide_password=False)
-        return self.MYSQL_URL
+        return self.DATABASE_URL
 
     @property
     def resolved_chroma_host(self) -> str:

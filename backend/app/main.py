@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
     """Verify dependencies and create database tables on startup."""
     logger.info("Backend starting up...")
     
-    # 1. Check external dependencies (MySQL, Chroma, ES)
+    # 1. Check external dependencies (PostgreSQL, Chroma, ES)
     deps_ok = check_dependencies()
     if not deps_ok:
         logger.error("Backend startup delayed: One or more dependencies are offline.")

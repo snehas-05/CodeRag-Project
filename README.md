@@ -58,7 +58,7 @@ Designed for enterprise-scale repositories.
 - JWT Authentication
 
 ## Databases
-- MySQL → Users & metadata
+- PostgreSQL → Users & metadata
 - ChromaDB → Vector storage
 - Elasticsearch → Hybrid search
 
@@ -88,7 +88,7 @@ Built on a modern, scalable, and intelligent AI-powered technology stack.
 - **Server:** Uvicorn (ASGI production-ready server)
 
 ### 🗄️ Databases & Search
-- **Relational Database:** MySQL 8.0 (Users, sessions, metadata)
+- **Relational Database:** PostgreSQL 15 (Users, sessions, metadata)
 - **Vector Database:** ChromaDB (Semantic embedding search)
 - **Search Engine:** Elasticsearch (Keyword + hybrid retrieval)
 
@@ -162,12 +162,12 @@ Use this only if you want to start the databases/search services by themselves.
 If you plan to run the full Docker stack in the next step, you can skip this.
 
 ```bash
-docker compose up mysql chromadb elasticsearch
+docker compose up postgres chromadb elasticsearch
 ```
 
 This starts:
 
-MySQL Database → localhost:3306
+PostgreSQL Database → localhost:5432
 
 ChromaDB Vector Store → localhost:8000
 
@@ -185,7 +185,7 @@ Use this flow if you want to run the full stack in Docker:
 
 ```bash
 # Start full stack
-docker compose up -d mysql chromadb elasticsearch backend frontend
+docker compose up -d postgres chromadb elasticsearch backend frontend
 
 # Returning user (fast path: reuse cached layers/dependencies)
 docker compose build backend
@@ -228,7 +228,7 @@ cp .env.example .env
 
 # Edit .env and add:
 # GEMINI_API_KEY
-# MYSQL credentials
+# PostgreSQL credentials
 # JWT secret
 
 # Start backend server
@@ -271,13 +271,12 @@ Then configure the following values:
 # App Mode ("local" for dev, "docker" for Docker Compose)
 APP_ENV=local
 
-# MySQL
-MYSQL_ROOT_PASSWORD=rootpassword
-MYSQL_DATABASE=coderag
-MYSQL_USER=coderag_user
-MYSQL_PASSWORD=coderag_pass
-MYSQL_URL=mysql+pymysql://coderag_user:coderag_pass@mysql:3306/coderag
-MYSQL_HOST_PORT=3307
+# PostgreSQL
+POSTGRES_DB=coderag
+POSTGRES_USER=coderag_user
+POSTGRES_PASSWORD=coderag_pass
+DATABASE_URL=postgresql://coderag_user:coderag_pass@postgres:5432/coderag
+POSTGRES_HOST_PORT=5432
 
 # Security
 SECRET_KEY=your-secret-key-change-in-production
@@ -333,7 +332,7 @@ Try asking questions like:
 - Show all backend API routes
 - Explain vector search logic
 - Where is JWT implemented?
-- Which files use MySQL?
+- Which files use PostgreSQL?
 - How does the chat pipeline work?
 
 ---

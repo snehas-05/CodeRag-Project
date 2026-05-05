@@ -24,7 +24,7 @@ ENV/
 *.swo
 
 # Docker volumes
-mysql_data/
+postgres_data/
 chroma_data/
 es_data/
 
